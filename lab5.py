@@ -8,33 +8,24 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import seaborn as sns
 
-# Загрузка данных из файла
-file_path = 'water-treatment.txt'  # Замените на путь к вашему файлу
+file_path = 'water-treatment.txt' 
 data = pd.read_csv(file_path)
 
-# Пропущенные значения в вашем dataset обозначены как '?', заменим их на NaN
 data = data.replace('?', np.nan)
 
-# Для числовых столбцов преобразуем данные в float
-# Первый столбец - дата, остальные - числовые параметры
-numeric_columns = data.columns[1:]  # все столбцы кроме первого (дата)
+numeric_columns = data.columns[1:] 
 for col in numeric_columns:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
-# Выбираем только числовые признаки для кластеризации
 X = data[numeric_columns]
 
-# Заполняем пропущенные значения медианой каждого столбца
 X_filled = X.fillna(X.median())
 
-# Масштабируем признаки
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_filled)
 
-# Преобразуем в плотную матрицу (уже плотная, но для consistency)
 X_scaled_dense = X_scaled
 
-# Визуализация данных после PCA
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_scaled_dense)
 
@@ -45,7 +36,6 @@ plt.show()
 # Функция для оценки кластеризации
 def evaluate_clustering(model, data):
     labels = model.fit_predict(data)
-    # Проверка, что есть более 1 кластера
     if len(set(labels)) > 1 and -1 in labels:
         core_labels = labels[labels != -1]
         core_data = data[labels != -1]
@@ -68,11 +58,11 @@ for k in kmeans_params:
     kmeans = KMeans(n_clusters=k, random_state=42)
     labels, score = evaluate_clustering(kmeans, X_scaled_dense)
     print(f'KMeans с k={k}, Силуэтный коэффициент: {score:.3f}')
-    labels_for_k.append(labels)  # сохраняем метки для каждого k
+    labels_for_k.append(labels) 
     if score > best_score_kmeans:
         best_score_kmeans = score
         best_kmeans = kmeans
-        best_labels_kmeans = labels  # метки для лучшего k
+        best_labels_kmeans = labels  
         best_k = k
 
 print(f'Лучшее число кластеров для KMeans: {best_k} с коэффициентом: {best_score_kmeans:.3f}')
@@ -89,15 +79,12 @@ for i, k in enumerate(kmeans_params):
 plt.tight_layout()
 plt.show()
 
-########################
 # 2. Agglomerative Clustering
-# Задаем параметры
 agg_params = [2, 3, 4, 5, 6]
 best_score_agg = -1
 best_labels_agg = []
 best_n_agg = None
 
-# В список для хранения меток для каждого k
 labels_list = []
 
 for n in agg_params:
@@ -124,10 +111,7 @@ for i, n in enumerate(agg_params):
 plt.tight_layout()
 plt.show()
 
-
-################
 # 3. SpectralClustering
-# Параметры для подборки
 spectral_params = [2, 3, 4, 5, 6]
 best_score_spectral = -1
 best_labels_spectral = []
@@ -187,7 +171,7 @@ plt.ylabel('PC2')
 plt.tight_layout()
 plt.show()
 
-# Итог: определение лучшего метода
+#Определение лучшего метода
 scores = {
     'KMeans': best_score_kmeans,
     'Agglomerative': best_score_agg,
