@@ -93,27 +93,21 @@ plt.tight_layout()
 plt.show()
 ```
 
-K-Means (K-средних) — это один из самых популярных и простых алгоритмов кластеризации, который разделяет данные на K кластеров на основе их схожести
+K-Means (К-средних) — это один из самых популярных и широко используемых алгоритмов кластеризации в машинном обучении. Он относится к категории неконтролируемого обучения, что означает, что алгоритм работает с данными без заранее известных меток или категорий.
 
-# Визуализация для каждого k
-fig, axes = plt.subplots(1, len(kmeans_params), figsize=(13, 4))
-for i, k in enumerate(kmeans_params):
-    labels = labels_for_k[i]
-    axes[i].scatter(X_pca[:, 0], X_pca[:, 1], c=labels, cmap='viridis')
-    axes[i].set_title(f'k={k}')
-    axes[i].set_xlabel('PC1')
-    axes[i].set_ylabel('PC2')
+K — количество кластеров, которые мы хотим найти
+Means (средние) — алгоритм использует средние значения точек для определения центров кластеров
 
-plt.tight_layout()
-plt.show()
-```
-![alt text](2.png)
-![alt text](console1.png)
+Основная задача K-Means — автоматически группировать похожие объекты в кластеры на основе их характеристик:
+
+Объединяет похожие данные в группы (кластеры)
+Разделяет различные данные на разные группы
+Находит скрытые паттерны в данных без какого-либо предварительного знания о том, какие группы должны существовать
+
 
 ## Метод кластеризации - Agglomerative Clustering
 
-```
-# 2. Agglomerative Clustering
+```# 2. Agglomerative Clustering
 agg_params = [2, 3, 4, 5, 6]
 best_score_agg = -1
 best_labels_agg = []
@@ -146,9 +140,9 @@ for i, n in enumerate(agg_params):
 plt.tight_layout()
 plt.show()
 ```
-![alt text](3.png)
-![alt text](console2.png)
+Agglomerative Clustering (Агломеративная кластеризация) — это иерархический алгоритм кластеризации, который работает по принципу "снизу вверх". Это означает, что кластеры могут содержать внутри себя другие кластеры, образуя многоуровневую структуру.
 
+Принцип "снизу вверх" (также называемый агломеративным подходом) — это стратегия, при которой процесс начинается с самых мелких элементов и постепенно объединяет их во все более крупные группы.
 
 
 ## Метод кластеризации - SpectralClustering
@@ -165,7 +159,7 @@ labels_list_spectral = []
 
 for n in spectral_params:
     spectral = SpectralClustering(n_clusters=n, affinity='nearest_neighbors', random_state=42)
-    labels, score = evaluate_clustering(spectral, X_scaled)
+    labels, score = evaluate_clustering(spectral, X_scaled_dense)
     print(f'SpectralClustering с n_clusters={n}, Силуэтный коэффициент: {score:.3f}')
     labels_list_spectral.append(labels)
     if score > best_score_spectral:
@@ -187,41 +181,15 @@ for i, n in enumerate(spectral_params):
 plt.tight_layout()
 plt.show()
 ```
-![alt text](4.png)
-![alt text](console3.png)
 
-## Визуализация лучших методов
+Spectral Clustering (Спектральная кластеризация) — это алгоритм кластеризации, основанный на теориях из линейной алгебры и спектральной теории графов. Spectral Clustering использует собственные значения и собственные векторы матриц для преобразования данных в более удобное пространство.
 
-```
-plt.figure(figsize=(13, 5))
+Основная задача Spectral Clustering — обнаруживать сложные нелинейные структуры в данных, которые традиционные алгоритмы (как K-Means) не могут выявить.
 
-# KMeans
-plt.subplot(1, 3, 1)
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=best_labels_kmeans, cmap='viridis')
-plt.title('KMeans Cluster')
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-
-# Agglomerative Clustering
-plt.subplot(1, 3, 2)
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=best_labels_agg, cmap='viridis')
-plt.title('Agglomerative Cluster')
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-
-# SpectralClustering
-plt.subplot(1, 3, 3)
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=best_labels_spectral, cmap='viridis')
-plt.title('SpectralClustering')
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-
-plt.tight_layout()
-plt.show()
-```
 ## Определение лучшего метода
 
 ```
+# Итог: определение лучшего метода
 scores = {
     'KMeans': best_score_kmeans,
     'Agglomerative': best_score_agg,
@@ -231,8 +199,8 @@ scores = {
 best_method = max(scores, key=scores.get)
 print(f'Лучший метод кластеризации: {best_method} с коэффициентом {scores[best_method]:.3f}')
 ```
-![alt text](5.png)
-![alt text](console4.png)
+
+
 
 
 
